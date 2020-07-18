@@ -5,6 +5,7 @@ const app = express();
 
 const connectDb = require('./dbConfig');
 const Estudiantes = require('./models/Estudiantes');
+const { response } = require('express');
 
 const PORT = 3000;
 
@@ -36,7 +37,18 @@ app.get('/api/estudiantes/:id', async (req, res) => {
         res.json({});
     }
 });
+app.put('/api/estudiantes/:id', async (req, res) => {
 
+    const { nombre, edad } = req.body;
+    await Estudiantes.findByIdAndUpdate(req.params.id, { nombre, edad });
+    res.json({ nombre, edad });
+
+    });
+app.delete('/api/estudiantes/:id' ,async (req ,res) => {
+        const estudiante = await Estudiantes.findById(req.params.id).select('nombre edad');
+        res.json(estudiante);
+        await Estudiantes.findByIdAndDelete(req.params.id);
+    });
 connectDb().then(() => {
     app.listen(PORT, () => {
       console.log(`Ejecutando en el puerto ${PORT}`);
